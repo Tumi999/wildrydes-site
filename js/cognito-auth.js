@@ -7,7 +7,8 @@ var WildRydes = window.WildRydes || {};
 
     var poolData = {
         UserPoolId: _config.cognito.userPoolId,
-        ClientId: _config.cognito.userPoolClientId
+        ClientId: _config.cognito.userPoolClientId,
+        ClientSecret: _config.cognito.userPoolClientSecret
     };
 
     var userPool;
@@ -49,8 +50,20 @@ var WildRydes = window.WildRydes || {};
 
 
     /*
-     * Cognito User Pool functions
+     * Cognito User Pool functions   
      */
+
+    function generateSecretHash(username, clientId, clientSecret) {
+    var message = username + clientId;
+    var hash = CryptoJS.HmacSHA256(message, clientSecret);
+    return CryptoJS.enc.Base64.stringify(hash);
+}
+function generateSecretHash(username, clientId, clientSecret) {
+    var message = username + clientId;
+    var hash = CryptoJS.HmacSHA256(message, clientSecret);
+    return CryptoJS.enc.Base64.stringify(hash);
+}
+
 
     function register(email, password, onSuccess, onFailure) {
         var dataEmail = {
@@ -73,7 +86,8 @@ var WildRydes = window.WildRydes || {};
     function signin(email, password, onSuccess, onFailure) {
         var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
             Username: toUsername(email),
-            Password: password
+            Password: password,
+            SecretHash: secretHash
         });
 
         var cognitoUser = createCognitoUser(email);
